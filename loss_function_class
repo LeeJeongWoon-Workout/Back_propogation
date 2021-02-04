@@ -1,0 +1,12 @@
+class MeanSquaredError:
+    def __init__(self):
+        # gradient  # chain rule 에서 게속 가져오기 위해서 저장한다.
+        self.dh = 1
+        self.last_diff = 1        
+
+    def __call__(self, h, y): # 1/2 * mean ((h - y)^2)
+        self.last_diff = h - y
+        return 1 / 2 * np.mean(np.square(h - y))
+
+    def grad(self): # h - y
+        return self.last_diff
