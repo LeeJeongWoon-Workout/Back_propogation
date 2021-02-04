@@ -1,0 +1,38 @@
+class DNN:
+    def __init__(self, hidden_depth, num_neuron, input, output, activation=Sigmoid):
+        def init_var(i, o):
+            return np.random.normal(0.0, 0.01, (i, o)), np.zeros((o,))
+
+        self.sequence = list()
+        # First hidden layer
+        W, b = init_var(input, num_neuron)
+        self.sequence.append(Neuron(W, b, activation))
+
+        # Hidden Layers
+        for index in range(hidden_depth):
+            W, b = init_var(num_neuron, num_neuron)
+            self.sequence.append(Neuron(W, b, activation))
+
+        # Output Layer
+        W, b = init_var(num_neuron, output)
+        self.sequence.append(Neuron(W, b, activation))
+
+    def __call__(self, x):
+        for layer in self.sequence:
+            x = layer(x)
+        return x
+
+    def calc_gradient(self, loss_obj):
+        loss_obj.dh = loss_obj.grad()
+        self.sequence.append(loss_obj)
+        
+        # back-prop loop
+        for i in range(len(self.sequence) - 1, 0, -1):
+            l1 = self.sequence[i]
+            l0 = self.sequence[i - 1]
+            
+            l0.dh = _m(l0.grad(), l1.dh)
+            l0.dW = l0.grad_W(l1.dh)
+            l0.db = l0.grad_b(l1.dh)
+        
+        self.sequence.remove(loss_obj)
