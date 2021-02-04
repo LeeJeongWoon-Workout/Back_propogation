@@ -1,0 +1,5 @@
+def _t(x):
+    return np.transpose(x)
+
+def _m(A, B):
+    return np.matmul(A, B)
